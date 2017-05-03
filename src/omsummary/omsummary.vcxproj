@@ -139,11 +139,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="csvload.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="omsummary.c" />
+    <ClCompile Include="timestamp.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="csvload.h" />
     <ClInclude Include="omsummary.h" />
+    <ClInclude Include="timestamp.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

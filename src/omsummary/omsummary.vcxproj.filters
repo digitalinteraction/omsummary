@@ -21,9 +21,21 @@
     <ClCompile Include="omsummary.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="timestamp.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="csvload.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="omsummary.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="timestamp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="csvload.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
