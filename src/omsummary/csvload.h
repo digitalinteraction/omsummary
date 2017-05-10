@@ -26,6 +26,12 @@
 // CSV Load
 // Dan Jackson
 
+
+// TODO: Add tab-separated optoin (with auto-detection)
+// TODO: Add proper parsing of quoted strings (including quotes-within-quotes, possibly strings containing new-lines?)
+// TODO: Add specific header size (e.g. allow specified count, detect on specific string, and detect '---' prefix and treat as header lines until similar found -- requires multi-line detection).
+
+
 #include <stdbool.h>
 #include <stdio.h>
 

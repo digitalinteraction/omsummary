@@ -43,13 +43,18 @@ int CsvOpen(csv_load_t *csv, const char *filename, csv_header_t header)
 	memset(csv, 0, sizeof(csv_load_t));
 	if (filename == NULL || filename[0] == '\0')
 	{
-		fprintf(stderr, "ERROR: CSV file not specified.\n");
-		return false;
+		//fprintf(stderr, "ERROR: CSV file not specified.\n");
+		//return false;
+		csv->fp = stdin;
 	}
-	csv->fp = fopen(filename, "rt");
+	else
+	{
+		csv->fp = fopen(filename, "rt");
+	}
+
 	if (csv->fp == NULL) 
 	{ 
-		fprintf(stderr, "ERROR: Problem opening CSV file: %s\n", filename);
+		fprintf(stderr, "ERROR: Problem opening CSV file for input: %s\n", filename);
 		return false;
 	}
 	csv->lineNumber = 0;
@@ -180,7 +185,10 @@ void CsvClose(csv_load_t *csv)
 	csv->numTokens = -1;
 	if (csv->fp != NULL)
 	{
-		fclose(csv->fp);
+		if (csv->fp != stdin)
+		{
+			fclose(csv->fp);
+		}
 		csv->fp = NULL;
 	}
 }
