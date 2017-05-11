@@ -24,9 +24,6 @@
 */
 
 
-// TODO: Scaling for output (e.g. "1/60" for minutes)
-
-
 // Open Movement Summary Generator
 // Dan Jackson
 
@@ -60,7 +57,7 @@ typedef struct
 	double first;		// earliest timestamp found within this interval
 	double last;		// latest timestamp found within this interval
 	double duration;	// sum of all time span durations intersecting this interval
-	double count;		// count of all time spans overlapping this interval
+	int count;			// count of all time spans overlapping this interval
 } interval_t;
 
 typedef struct
@@ -189,7 +186,10 @@ int OmSummaryRun(omsummary_settings_t *settings)
 	// Load data
 	csv_load_t csv;
 	int colStart = -1, colEnd = -1, colDuration = -1;
-	fprintf(stderr, "Opening data: %s\n", settings->filename);
+	if (settings->filename != NULL && settings->filename[0] != '\0')
+	{
+		fprintf(stderr, "Opening data: %s\n", settings->filename);
+	}
 	int headerCells = CsvOpen(&csv, settings->filename, CSV_HEADER_DETECT_NON_NUMERIC);
 	if (headerCells > 0)
 	{
@@ -325,6 +325,7 @@ int OmSummaryRun(omsummary_settings_t *settings)
 	}
 	else
 	{
+		fprintf(stderr, "Saving data: %s\n", settings->outFilename);
 		ofp = fopen(settings->outFilename, "wt");
 	}
 
@@ -334,11 +335,19 @@ int OmSummaryRun(omsummary_settings_t *settings)
 		return -1;
 	}
 
-	fprintf(ofp, "Label,Start,End,Interval,First,TimeUntilFirst,Last,TimeAfterLast,FirstToLast,Count,Duration,Proportion\n");
+	if (settings->header == NULL)
+	{
+		fprintf(ofp, "Label,Start,End,Interval,First,TimeUntilFirst,Last,TimeAfterLast,FirstToLast,Count,Duration,Proportion\n");
+	}
+	else if (settings->header[0] != '\0')
+	{
+		fprintf(ofp, "%s\n", settings->header);
+	}
+
 	int j = 0;
 	for (j = 0; j < times.numIntervals; j++)
 	{
-		interval_t *it = &times.intervals[currentTime];
+		interval_t *it = &times.intervals[j];
 		double interval = it->end - it->start;
 		double proportion = 0;
 		if (interval > 0)
@@ -349,49 +358,42 @@ int OmSummaryRun(omsummary_settings_t *settings)
 		fprintf(ofp, "%s,", it->label);												// Label
 		fprintf(ofp, "%s,", TimeString(it->start, NULL));							// Start
 		fprintf(ofp, "%s,", TimeString(it->end, NULL));								// End
-		fprintf(ofp, "%f,", interval);												// Interval
+		fprintf(ofp, "%f,", interval * settings->scale);							// Interval
 
-		// First
-		// TimeUntilFirst
 		if (it->first <= 0)
 		{
 			fprintf(ofp, ",,");
 		}
 		else
 		{
-			fprintf(ofp, "%s,", TimeString(it->first, NULL));
-			fprintf(ofp, "%f,", (it->first - it->start));
+			fprintf(ofp, "%s,", TimeString(it->first, NULL));						// First
+			fprintf(ofp, "%f,", (it->first - it->start) * settings->scale);			// TimeUntilFirst
 		}
 
-		// Last
-		// TimeAfterLast
 		if (it->last <= 0)
 		{
 			fprintf(ofp, ",,");
 		}
 		else
 		{
-			fprintf(ofp, "%s,", TimeString(it->last, NULL));
-			fprintf(ofp, "%f,", (it->end - it->last));
+			fprintf(ofp, "%s,", TimeString(it->last, NULL));						// Last
+			fprintf(ofp, "%f,", (it->end - it->last) * settings->scale);			// TimeAfterLast
 		}
 
-		// FirstToLast
 		if (it->first <= 0 || it->last <= 0)
 		{
 			fprintf(ofp, ",");
-			fprintf(ofp, "%f,", (it->last - it->first));
+		}
+		else
+		{
+			fprintf(ofp, "%f,", (it->last - it->first) * settings->scale);			// FirstToLast
 		}
 
-		fprintf(ofp, "%s,", (it->last <= 0.0) ? "" : TimeString(it->last, NULL));	// Last time
-		fprintf(ofp, "%d,", it->count);												// Count
-		fprintf(ofp, "%f,", it->duration);											// Duration
+		fprintf(ofp, "%d,", it->count + settings->countOffset);						// Count
+		fprintf(ofp, "%f,", it->duration * settings->scale);						// Duration
+		fprintf(ofp, "%f", proportion * settings->scaleProp);						// Duration
 
 		fprintf(ofp, "\n");
-
-		double first;		// earliest timestamp found within this interval
-		double last;		// latest timestamp found within this interval
-		double duration;	// sum of all time span durations intersecting this interval
-
 
 	}
 
@@ -404,12 +406,3 @@ int OmSummaryRun(omsummary_settings_t *settings)
 	return 0;
 }
 
-
-/*
-Duration: "Total sleep time" = (SUM)total within period
-TimeFirstToLast: "Wake after sleep onset" = (last - first) range within period
-TimeUntilFirst: "Sleep onset latency" = (first - start)
-Interval: "Time in bed" = (end - start)
-Count (NOT -1): "Number of awakenings" = (COUNT - 1)
-Proportion (0-1 not %): "Sleep efficiency" = 100 * SUM / (end - start)
-*/

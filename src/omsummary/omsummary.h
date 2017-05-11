@@ -34,6 +34,10 @@ typedef struct
 	const char *filename;
 	const char *timesFilename;
 	const char *outFilename;
+	double scale;					// Interval time scaling (e.g. 1/60 = minutes)
+	double scaleProp;				// Proportion scaling (e.g. 100 = percent)
+	int countOffset;				// Offset to apply to count (e.g. -1 = count-1)
+	const char *header;				// Custom header line (empty for no header line, NULL for default)
 } omsummary_settings_t;
 
 int OmSummaryRun(omsummary_settings_t *settings);
