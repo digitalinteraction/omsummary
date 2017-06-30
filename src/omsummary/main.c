@@ -76,6 +76,7 @@ int main(int argc, char *argv[])
 	settings.scaleProp = 1.0f;			// "100" for percentage
 	settings.countOffset = 0;			// "-1" to report count-1
 	settings.header = NULL;
+	settings.separator = NULL;
 
 	for (i = 1; i < argc; i++)
 	{
@@ -107,7 +108,14 @@ int main(int argc, char *argv[])
 		else if (strcmp(argv[i], "-scaleprop") == 0) { settings.scaleProp = scale(argv[++i]); }
 		else if (strcmp(argv[i], "-countoffset") == 0) { settings.countOffset = atoi(argv[++i]); }
 		else if (strcmp(argv[i], "-header") == 0) { settings.header = argv[++i]; }
-
+		else if (strcmp(argv[i], "-separator") == 0)
+		{
+			settings.separator = argv[++i];
+			if (strcmp(settings.separator, "\\t") == 0) {
+				settings.separator = "\t";
+			}
+		}
+		
 		else if (argv[i][0] == '-')
 		{
 			fprintf(stderr, "Unknown option: %s\n", argv[i]);
@@ -133,6 +141,9 @@ int main(int argc, char *argv[])
 
 	if (help)
 	{
+		fprintf(stderr, "omsummary OM Summary Tool\n");
+		fprintf(stderr, "V1.01\n");
+		fprintf(stderr, "\n");
 		fprintf(stderr, "Usage: omsummary [[-in] <input.csv>] -times <times.csv> [-out <output.csv>] [-scale <scale>] [-scaleprop <scale>] [-header <header>]\n");
 		fprintf(stderr, "\n");
 		fprintf(stderr, "Options:\n");
@@ -147,6 +158,7 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "\t-scaleprop <scale>      Proportion scaling, for percent: 100\n");
 		fprintf(stderr, "\t-countoffset <offset>   Offset to apply to count, e.g. -1\n");
 		fprintf(stderr, "\t-header <header>        Custom output header line\n");
+		fprintf(stderr, "\t-separator <character>  Custom output field separator\n");
 		fprintf(stderr, "\n");
 		ret = -1;
 	}

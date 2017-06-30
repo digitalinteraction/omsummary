@@ -27,7 +27,6 @@
 // Dan Jackson
 
 
-// TODO: Add tab-separated optoin (with auto-detection)
 // TODO: Add proper parsing of quoted strings (including quotes-within-quotes, possibly strings containing new-lines?)
 // TODO: Add specific header size (e.g. allow specified count, detect on specific string, and detect '---' prefix and treat as header lines until similar found -- requires multi-line detection).
 
@@ -46,6 +45,8 @@ typedef struct
 	char *tokens[CSV_MAX_TOKENS];		// Parsed token pointers
 	int numTokens;						// Token count
 	bool pushed;						// The last line was "unread", return again
+	const char *separatorTypes;			// Possible field separator characters
+	char separator;						// Chosen field separator character
 } csv_load_t;
 
 int CsvLineNumber(csv_load_t *csv);
@@ -65,7 +66,9 @@ typedef enum
 	CSV_HEADER_ALWAYS = 1,				// Always header in CSV file
 } csv_header_t;
 
-int CsvOpen(csv_load_t *csv, const char *filename, csv_header_t header);
+#define CSV_SEPARATORS "\t;,"
+
+int CsvOpen(csv_load_t *csv, const char *filename, csv_header_t header, const char *separatorTypes);
 int CsvReadLine(csv_load_t *csv);
 void CsvClose(csv_load_t *csv);
 

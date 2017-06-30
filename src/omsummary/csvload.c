@@ -38,9 +38,20 @@
 
 
 // Open a CSV file and optionally load the header line
-int CsvOpen(csv_load_t *csv, const char *filename, csv_header_t header)
+int CsvOpen(csv_load_t *csv, const char *filename, csv_header_t header, const char *separatorTypes)
 {
 	memset(csv, 0, sizeof(csv_load_t));
+
+	if (separatorTypes == NULL || separatorTypes[0] == '\0')
+	{
+		csv->separatorTypes = ",";
+	}
+	else
+	{
+		csv->separatorTypes = separatorTypes;
+	}
+	csv->separator = '\0';
+
 	if (filename == NULL || filename[0] == '\0')
 	{
 		//fprintf(stderr, "ERROR: CSV file not specified.\n");
@@ -120,8 +131,31 @@ int CsvReadLine(csv_load_t *csv)
 			// TODO: write a custom parser to cope with quoted strings including commas
 			// Parse comma-separated tokens
 			csv->numTokens = 0;
-			const char *tokens = ",\r\n";
-			for (char *token = strtok(csv->line, tokens); token != NULL; token = strtok(NULL, tokens))
+
+			// If we have not determined the separator yet...
+			if (csv->separator == '\0')
+			{
+				// Find the first of each of the possible separators...
+				for (const char *c = csv->separatorTypes; *c != '\0'; c++)
+				{
+					// ...if it exists...
+					if (strchr(csv->line, *c) != NULL)
+					{
+						// ...use it as the separator for the file.
+						csv->separator = *c;
+						break;
+					}
+				}
+			}
+
+			// Tokenize
+			char seps[4] = "";
+			if (csv->separator != '\0')
+			{
+				sprintf(seps, "%c", csv->separator);
+			}
+			strcat(seps, "\r\n");
+			for (char *token = strtok(csv->line, seps); token != NULL; token = strtok(NULL, seps))
 			{
 				if (csv->numTokens < sizeof(csv->tokens) / sizeof(csv->tokens[0]))
 				{

@@ -38,6 +38,7 @@ typedef struct
 	double scaleProp;				// Proportion scaling (e.g. 100 = percent)
 	int countOffset;				// Offset to apply to count (e.g. -1 = count-1)
 	const char *header;				// Custom header line (empty for no header line, NULL for default)
+	const char *separator;			// Custom output separator
 } omsummary_settings_t;
 
 int OmSummaryRun(omsummary_settings_t *settings);
