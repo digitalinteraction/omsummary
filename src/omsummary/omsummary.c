@@ -346,16 +346,20 @@ int OmSummaryRun(omsummary_settings_t *settings)
 	{
 		separator = settings->separator;
 	}
-	for (const char *p = header; *p != '\0'; p++)
+	if (header != NULL && header[0] != '\0')
 	{
-		if (*p == ',')
+		for (const char *p = header; *p != '\0'; p++)
 		{
-			fprintf(ofp, "%s", separator);
+			if (*p == ',')
+			{
+				fprintf(ofp, "%s", separator);
+			}
+			else
+			{
+				fprintf(ofp, "%c", *p);
+			}
 		}
-		else
-		{
-			fprintf(ofp, "%c", *p);
-		}
+		fprintf(ofp, "\n");
 	}
 
 	int j = 0;

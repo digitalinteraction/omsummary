@@ -3,7 +3,7 @@ setlocal
 
 if not exist "%~dp0omsummary.exe" goto notfound_exe
 
-if "%1"=="" goto usage
+if "%~1"=="" goto usage
 
 :run
 
