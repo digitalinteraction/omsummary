@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
 			// FirstToLast : "First sleep to last wake time" (last - first) range within period
 			// Count(must use "-countoffset -1") : "Number of awakenings" = (COUNT - 1)
 			// Duration : "Total sleep time" = (SUM)total within period
-			// IntervalMinusDuration : "Wake time after sleep onset (WASO)" = Interval - Duration = (end - start) - (SUM)total within period
+			// FirstToLastMinusDuration : "Wake time after sleep onset (WASO)" = FirstToLast - Duration = (last - first) - (SUM)total within period
 			// Proportion(must use "-scaleprop 100") : "Sleep efficiency" = 100 * SUM / (end - start)
 		}
 
@@ -143,7 +143,7 @@ int main(int argc, char *argv[])
 	if (help)
 	{
 		fprintf(stderr, "omsummary OM Summary Tool\n");
-		fprintf(stderr, "V1.02\n");
+		fprintf(stderr, "V1.03\n");
 		fprintf(stderr, "\n");
 		fprintf(stderr, "Usage: omsummary [[-in] <input.csv>] -times <times.csv> [-out <output.csv>] [-scale <scale>] [-scaleprop <scale>] [-header <header>]\n");
 		fprintf(stderr, "\n");

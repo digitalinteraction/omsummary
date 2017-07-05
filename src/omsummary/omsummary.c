@@ -336,7 +336,7 @@ int OmSummaryRun(omsummary_settings_t *settings)
 	}
 
 	// Write header (with custom separator)
-	const char *header = "Label,Start,End,Interval,First,TimeUntilFirst,Last,TimeAfterLast,FirstToLast,Count,Duration,IntervalMinusDuration,Proportion";
+	const char *header = "Label,Start,End,Interval,First,TimeUntilFirst,Last,TimeAfterLast,FirstToLast,Count,Duration,FirstToLastMinusDuration,Proportion";
 	const char *separator = ",";
 	if (settings->header != NULL)
 	{
@@ -409,7 +409,15 @@ int OmSummaryRun(omsummary_settings_t *settings)
 
 		fprintf(ofp, "%d%s", it->count + settings->countOffset, separator);				// Count
 		fprintf(ofp, "%f%s", it->duration * settings->scale, separator);				// Duration
-		fprintf(ofp, "%f%s", (interval - it->duration) * settings->scale, separator);	// IntervalMinusDuration
+
+		if (it->first <= 0 || it->last <= 0)
+		{
+			fprintf(ofp, "%s", separator);
+		}
+		else
+		{
+			fprintf(ofp, "%f%s", ((it->last - it->first) - it->duration) * settings->scale, separator);	// FirstToLastMinusDuration
+		}
 
 		fprintf(ofp, "%f", proportion * settings->scaleProp);							// Proportion
 
