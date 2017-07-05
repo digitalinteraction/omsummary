@@ -91,16 +91,17 @@ int main(int argc, char *argv[])
 			settings.scale = 1.0 / 60.0;
 			settings.scaleProp = 100.0;
 			settings.countOffset = -1;
-			settings.header = "Label,Start,End,TimeInBed,SleepTime,SleepOnsetLatency,WakeTime,TimeToGetUp,WakeAfterSleepOnset,Awakenings,TotalSleepTime,SleepEfficiency";
+			settings.header = "Label,Start,End,TimeInBed,SleepTime,SleepOnsetLatency,WakeTime,TimeToGetUp,FirstSleepToLastWakeTime,Awakenings,TotalSleepTime,WakeAfterSleepOnset,SleepEfficiency";
 
 			// Interval: "Time in bed" = (end - start)
 			// (First : "Time First Asleep")
 			// TimeUntilFirst : "Sleep onset latency" = (first - start)
 			// (Last : "Time Last Awoke")
 			// (TimeAfterLast : "Time to get up")
-			// FirstToLast : "Wake after sleep onset" = (last - first) range within period
+			// FirstToLast : "First sleep to last wake time" (last - first) range within period
 			// Count(must use "-countoffset -1") : "Number of awakenings" = (COUNT - 1)
 			// Duration : "Total sleep time" = (SUM)total within period
+			// IntervalMinusDuration : "Wake time after sleep onset (WASO)" = Interval - Duration = (end - start) - (SUM)total within period
 			// Proportion(must use "-scaleprop 100") : "Sleep efficiency" = 100 * SUM / (end - start)
 		}
 
@@ -142,7 +143,7 @@ int main(int argc, char *argv[])
 	if (help)
 	{
 		fprintf(stderr, "omsummary OM Summary Tool\n");
-		fprintf(stderr, "V1.01\n");
+		fprintf(stderr, "V1.02\n");
 		fprintf(stderr, "\n");
 		fprintf(stderr, "Usage: omsummary [[-in] <input.csv>] -times <times.csv> [-out <output.csv>] [-scale <scale>] [-scaleprop <scale>] [-header <header>]\n");
 		fprintf(stderr, "\n");

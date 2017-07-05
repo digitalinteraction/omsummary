@@ -193,7 +193,7 @@ int OmSummaryRun(omsummary_settings_t *settings)
 	int headerCells = CsvOpen(&csv, settings->filename, CSV_HEADER_DETECT_NON_NUMERIC, CSV_SEPARATORS);
 	if (headerCells > 0)
 	{
-		// TODO: Parse header cells
+		// Parse header cells
 		int i;
 		for (i = 0; i < headerCells; i++)
 		{
@@ -336,7 +336,7 @@ int OmSummaryRun(omsummary_settings_t *settings)
 	}
 
 	// Write header (with custom separator)
-	const char *header = "Label,Start,End,Interval,First,TimeUntilFirst,Last,TimeAfterLast,FirstToLast,Count,Duration,Proportion";
+	const char *header = "Label,Start,End,Interval,First,TimeUntilFirst,Last,TimeAfterLast,FirstToLast,Count,Duration,IntervalMinusDuration,Proportion";
 	const char *separator = ",";
 	if (settings->header != NULL)
 	{
@@ -373,10 +373,10 @@ int OmSummaryRun(omsummary_settings_t *settings)
 			proportion = it->duration / interval;
 		}
 
-		fprintf(ofp, "%s%s", it->label, separator);									// Label
-		fprintf(ofp, "%s%s", TimeString(it->start, NULL), separator);				// Start
-		fprintf(ofp, "%s%s", TimeString(it->end, NULL), separator);					// End
-		fprintf(ofp, "%f%s", interval * settings->scale, separator);				// Interval
+		fprintf(ofp, "%s%s", it->label, separator);										// Label
+		fprintf(ofp, "%s%s", TimeString(it->start, NULL), separator);					// Start
+		fprintf(ofp, "%s%s", TimeString(it->end, NULL), separator);						// End
+		fprintf(ofp, "%f%s", interval * settings->scale, separator);					// Interval
 
 		if (it->first <= 0)
 		{
@@ -384,7 +384,7 @@ int OmSummaryRun(omsummary_settings_t *settings)
 		}
 		else
 		{
-			fprintf(ofp, "%s%s", TimeString(it->first, NULL), separator);			// First
+			fprintf(ofp, "%s%s", TimeString(it->first, NULL), separator);				// First
 			fprintf(ofp, "%f%s", (it->first - it->start) * settings->scale, separator); // TimeUntilFirst
 		}
 
@@ -394,8 +394,8 @@ int OmSummaryRun(omsummary_settings_t *settings)
 		}
 		else
 		{
-			fprintf(ofp, "%s%s", TimeString(it->last, NULL), separator);			// Last
-			fprintf(ofp, "%f%s", (it->end - it->last) * settings->scale, separator);// TimeAfterLast
+			fprintf(ofp, "%s%s", TimeString(it->last, NULL), separator);				// Last
+			fprintf(ofp, "%f%s", (it->end - it->last) * settings->scale, separator);	// TimeAfterLast
 		}
 
 		if (it->first <= 0 || it->last <= 0)
@@ -404,12 +404,14 @@ int OmSummaryRun(omsummary_settings_t *settings)
 		}
 		else
 		{
-			fprintf(ofp, "%f%s", (it->last - it->first) * settings->scale, separator);// FirstToLast
+			fprintf(ofp, "%f%s", (it->last - it->first) * settings->scale, separator);	// FirstToLast
 		}
 
-		fprintf(ofp, "%d%s", it->count + settings->countOffset, separator);			// Count
-		fprintf(ofp, "%f%s", it->duration * settings->scale, separator);			// Duration
-		fprintf(ofp, "%f", proportion * settings->scaleProp);						// Proportion
+		fprintf(ofp, "%d%s", it->count + settings->countOffset, separator);				// Count
+		fprintf(ofp, "%f%s", it->duration * settings->scale, separator);				// Duration
+		fprintf(ofp, "%f%s", (interval - it->duration) * settings->scale, separator);	// IntervalMinusDuration
+
+		fprintf(ofp, "%f", proportion * settings->scaleProp);							// Proportion
 
 		fprintf(ofp, "\n");
 
