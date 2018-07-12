@@ -32,7 +32,8 @@
 #include <windows.h>
 #define _strcasecmp _stricmp
 #else
-#define _strcasecmp strcasecmd
+#include <strings.h>
+#define _strcasecmp strcasecmp
 #endif
 
 #include <stdio.h>
